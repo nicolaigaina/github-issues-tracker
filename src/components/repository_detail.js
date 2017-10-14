@@ -1,24 +1,47 @@
-import React from "react";
+import React, { Component } from "react";
+import {
+  SortableContainer,
+  SortableElement,
+  arrayMove
+} from "react-sortable-hoc";
 
-const RepositoryDetail = ({issues}) => {
-    if(!issues) {
-        return <div>This repository has no issues. </div>;
-    }
+let SortableItem = SortableElement(({ value }) => {
+  debugger;
+  return (
+    <li key={value.id} className="list-group-item">
+      <span>{value.title | <strong>{value.state}</strong>}</span>
+    </li>
+  );
+});
 
-    const issueItems = issues.map(issue => {
-        return (
-          <li key={issue.id}  className="list-group-item">
-            <span>{issue.title} | <strong>{issue.state}</strong></span>
-          </li>
-        );
-      });
+let SortableList = SortableContainer(({ items }) => {
+  return (
+    <ul className="col-md-4 list-group">
+      {items.map((value, index) => (
+        <SortableItem key={`item-${index}`} index={index} value={value} />
+      ))}
+    </ul>
+  );
+});
 
+class RepositoryDetail extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      items: props.issues
+    };
+  }
+
+  onSortEnd = ({ oldIndex, newIndex }) => {
+    this.setState({
+      items: arrayMove(this.props.issues, oldIndex, newIndex)
+    });
+  };
+  render() {
     return (
-        <div className="repository-detail col-md-8">
-        { issues.length ? <h3>Issues:</h3> : null}
-        <ul className="col-md-4 list-group">{issueItems}</ul>
-      </div>
-    )
+      <SortableList items={this.props.issues} onSortEnd={this.onSortEnd} />
+    );
+  }
 }
 
 export default RepositoryDetail;
