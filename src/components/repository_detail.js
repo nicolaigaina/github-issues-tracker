@@ -6,10 +6,9 @@ import {
 } from "react-sortable-hoc";
 
 let SortableItem = SortableElement(({ value }) => {
-  debugger;
   return (
     <li key={value.id} className="list-group-item">
-      <span>{value.title | <strong>{value.state}</strong>}</span>
+      <span>{value.title}</span> | <strong>{value.state}</strong>
     </li>
   );
 });
@@ -32,14 +31,30 @@ class RepositoryDetail extends Component {
     };
   }
 
+  getDataFromLocalStorage(){
+    let issues = JSON.parse(localStorage.getItem('issues'));
+    if(issues) {
+      this.setState({ 
+        items: issues 
+       });
+    }
+  }
+
   onSortEnd = ({ oldIndex, newIndex }) => {
     this.setState({
-      items: arrayMove(this.props.issues, oldIndex, newIndex)
+      items: arrayMove(this.state.items, oldIndex, newIndex)
     });
+
+    // setter
+    localStorage.setItem('issues', JSON.stringify(this.state));
   };
   render() {
     return (
-      <SortableList items={this.props.issues} onSortEnd={this.onSortEnd} />
+      <div className="repository-detail col-md-8">
+        { this.props.issues.length ? <h3>Issues:</h3> : null }
+        <SortableList items={this.props.issues} onSortEnd={this.onSortEnd} />
+      </div>
+      
     );
   }
 }

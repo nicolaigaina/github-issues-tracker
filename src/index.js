@@ -50,9 +50,11 @@ class App extends Component {
     let response = axios.get(url);
     response
       .then(({ data }) => {
-        this.setState({issues: data});
+        this.setState({ issues: data });
       })
-      .catch(({ response }) => {issues: []});
+      .catch(({ response }) => {
+        issues: [];
+      });
   }
 
   render() {
