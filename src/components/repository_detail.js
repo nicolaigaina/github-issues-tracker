@@ -31,11 +31,27 @@ class RepositoryDetail extends Component {
     onIssuesSort(sortedItems);
   };
 
-  render() {
+  displayCards() {
+    if (this.props.selectedRepository) {
+      return (
+        <div className="col-md-4 margined">
+          {this.props.issues.length ? <h3>Issues:</h3> : null}
+          <SortableList items={this.props.issues} onSortEnd={this.onSortEnd} />
+        </div>
+      );
+    }
+
     return (
       <div className="col-md-4 margined">
-        {this.props.issues.length ? <h3>Issues:</h3> : null}
-        <SortableList items={this.props.issues} onSortEnd={this.onSortEnd} />
+      
+      </div>
+    );
+  }
+
+  render() {
+    return(
+      <div>
+        {this.displayCards()}
       </div>
     );
   }
