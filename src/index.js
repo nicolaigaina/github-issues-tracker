@@ -2,6 +2,7 @@ import _ from "lodash";
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
 import axios from "axios";
+import LocalStorageMixin from 'react-localstorage';
 
 import UserSearchBar from "./components/user_search_bar";
 import RepositoriesList from "./components/repository_list";
@@ -12,16 +13,21 @@ class App extends Component {
     super(props);
 
     this.state = {
-      userName: null,
+      username: null,
       issues: [],
       repositories: [],
-      errorToDisplay: ""
+      errorToDisplay: "",
+      selectedRepository: null
     };
   }
 
+  componentDidMount() {
+    mixins: [LocalStorageMixin]
+  }
+
   fetchRepositories(username) {
-    let response = axios.get(`https://api.github.com/users/${username}/repos`);
-    response
+    axios
+      .get(`https://api.github.com/users/${username}/repos`)
       .then(({ data }) => {
         this.setState({
           username,
@@ -44,17 +50,21 @@ class App extends Component {
       });
   }
 
-  fetchIssues(repositoryName) {
-    const url = `https://api.github.com/repos/${this.state
-      .username}/${repositoryName}/issues`;
-    let response = axios.get(url);
-    response
-      .then(({ data }) => {
-        this.setState({ issues: data });
-      })
-      .catch(({ response }) => {
-        issues: [];
-      });
+  fetchIssues(repositoryName, username) {
+    const url = `https://api.github.com/repos/${username}/${repositoryName}/issues`;
+    axios
+      .get(url)
+      .then(({ data }) => this.setState({issues: data}))
+      .catch(({ response }) => this.setState({issues:[]}));
+  }
+
+  handleSelect(selectedRepository) {
+    this.setState({ selectedRepository: selectedRepository.name });
+    this.fetchIssues(selectedRepository.name, this.state.username);
+  }
+
+  handleIssuesSort(sortedIssues) {
+    this.setState({issues: sortedIssues});
   }
 
   render() {
@@ -65,14 +75,18 @@ class App extends Component {
           displayMessage={this.state.displayMessage}
         />
         <RepositoriesList
-          onRepositorySelect={this.fetchIssues.bind(this)}
+          onRepositorySelect={this.handleSelect.bind(this)}
           repositories={this.state.repositories}
         />
-        <RepositoryDetail issues={this.state.issues} />
+        <RepositoryDetail onIssuesSort={this.handleIssuesSort.bind(this)}
+          issues={this.state.issues}
+        />
       </div>
     );
   }
 }
+
+let globalCache = JSON.parse(localStorage.getItem('cache')) || {};
 
 ReactDOM.render(<App />, document.querySelector(".container"));
 

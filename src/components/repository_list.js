@@ -1,18 +1,21 @@
 import React from "react";
+import RepositoryListItem from "./repository_list_item";
 
 const RepositoriesList = props => {
   const repositoryItems = props.repositories.map(repo => {
     return (
-      <li key={repo.id} onClick={() => props.onRepositorySelect(repo.name)} className="list-group-item">
-        {repo.name}
-      </li>
+      <RepositoryListItem key={repo.id} repository={repo} onRepositorySelect={props.onRepositorySelect}>
+       
+      </RepositoryListItem>
     );
   });
 
   return (
-    <div className="col-md-4">
+    <div className="col-md-4 margined">
       { props.repositories.length ? <h3>Repositories:</h3> : null}
-      <ul className="list-group">{repositoryItems}</ul>
+      <ul className="list-group">
+        {repositoryItems}
+      </ul>
     </div>
   );
 };

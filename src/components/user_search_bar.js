@@ -16,8 +16,8 @@ class UserSearchBar extends Component {
 
   render() {
     return (
-      <div className="row">
-        <label className="margined" htmlFor="basic-url">Enter Username to find Repositories:</label>
+      <div className="col-sm-12 col-md-6 col-lg-12 margined no-padding">
+        <h3 className="margined" htmlFor="basic-url">Enter Username to find Repositories:</h3>
         <div className="form-inline">
           <input
             className="form-control margined"
